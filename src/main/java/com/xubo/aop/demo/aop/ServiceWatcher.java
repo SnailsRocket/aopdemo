@@ -41,6 +41,14 @@ public class ServiceWatcher {
         return callFunctionAndMarkResult(joinPoint, getFuncName(joinPoint), name, func);
     }
 
+    /**
+     * 做埋点操作，并打印日志
+     * @param joinPoint
+     * @param funcName
+     * @param name
+     * @param func
+     * @return
+     */
     protected Object callFunctionAndMarkResult(ProceedingJoinPoint joinPoint, String funcName, String name, String func) {
         long start = System.currentTimeMillis();
         try {
@@ -87,13 +95,18 @@ public class ServiceWatcher {
      * @return
      */
     protected boolean isParamsOpen() {
-        // 获取配置文件
+        // 获取配置文件 这里直接给true,后续需要手动实现
         return true;
     }
 
-    // 获取注解上的对象
+    /**
+     * 获取注解上的对象
+     * @param joinPoint
+     * @return
+     */
     protected String getName(ProceedingJoinPoint joinPoint) {
         try {
+            // 获取注解括号里面的参数
             return ((TestServiceWatch)getAnnotation(joinPoint, TestServiceWatch.class)).annoArg0();
         } catch (NoSuchMethodException e) {
             return "";
@@ -110,10 +123,17 @@ public class ServiceWatcher {
         String methodName = joinPoint.getSignature().getName();
         Class<?> classTarget = joinPoint.getSignature().getClass();
         Class<?>[] par = ((MethodSignature) joinPoint.getSignature()).getParameterTypes();
+        // 获取使用该注解修饰的方法
         Method objMethod = classTarget.getMethod(methodName, par);
+        // 获取方法上的注解
         return objMethod.getAnnotation(annotation);
     }
 
+    /**
+     * 获取注解中的参数
+     * @param joinPoint
+     * @return
+     */
     protected String getFunc(ProceedingJoinPoint joinPoint) {
         try {
             return ((TestServiceWatch)getAnnotation(joinPoint, TestServiceWatch.class)).annoArg1();
